@@ -6,7 +6,7 @@ Please read the Create_Stored_Procedures.sql or Week 4 Assignment 4.docx files f
 
 -- Use two numeric variables for the stored procedure parameters 2 and 3. The first parameter is numeric, but does not require a variable to be passed in 
 call employees.stored_proc1(100, @emp_first_name_j, @total_salary_row_limited);
-select  @emp_first_name_j,
+select	@emp_first_name_j,
 		@total_salary_row_limited;
 
 -- Stored Procedure takes 4 seconds, but is limited to 100 rows. This one has no parameters.

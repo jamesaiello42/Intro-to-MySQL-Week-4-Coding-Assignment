@@ -14,17 +14,17 @@ create procedure employees.stored_proc1(in row_limiter int, out how_many_names_s
 begin
 	-- sum row limited salary 
 	select sum(salary)
-    into total_salary
+	into total_salary
     from
 	(	
 		select salary
 		from employees.salaries
-        limit row_limiter
+		limit row_limiter
     ) as row_limited;
 	
 	-- Count total employees whose first name starts with 'j'
 	select count(emp_no)
-    into how_many_names_start_with_j
+	into how_many_names_start_with_j
 	from employees.employees
 	where first_name like 'j%';
 end//
@@ -55,17 +55,17 @@ begin
 		emp_no int(11) not null references employees(emp_no),
 		full_name char(200) not null,
 		salary decimal(20, 2) not null,
-        salary_group char(200)
+		salary_group char(200)
 	);
   
 	-- insert into the table who_made_90000_plus who makes 90000 or more
 	insert into employees.who_made_90000_plus (emp_no, full_name, salary)
 			select emp_no
 			,full_name
-            ,salary
-            from
+			,salary
+			from
 			(
-				select 	 e.emp_no
+				select	 e.emp_no
 						,concat(first_name, ' ', last_name) as full_name
 						,max(salary) as salary
 				from employees.employees as e
@@ -77,28 +77,28 @@ begin
 		limit 100;
     
 	-- Get count of employees for while loop
-    select max(id)
-    into cnt
+	select max(id)
+	into cnt
     from employees.who_made_90000_plus;
     
 	-- Determine who make 90000 or more or if they make 100000 or more
-    while cnt > 0 do
+	while cnt > 0 do
 		select salary
-        into sal
-        from employees.who_made_90000_plus
-        where id = cnt;
-        if sal >= 90000 and sal < 100000  then
-			 set salarygrp = '90000 dollars or more';
+		into sal
+		from employees.who_made_90000_plus
+		where id = cnt;
+		if sal >= 90000 and sal < 100000  then
+			set salarygrp = '90000 dollars or more';
 		elseif sal >= 100000 then
 			set salarygrp = '100000 dollars or more';
 		end if;
         
 		-- Update salary group in table
-        update employees.who_made_90000_plus
+		update employees.who_made_90000_plus
 			set salary_group = salarygrp
 		where id = cnt;
 	
-        set cnt = cnt - 1;
+		set cnt = cnt - 1;
 	end while;
 	
 	-- Show results of previous statements
@@ -126,7 +126,7 @@ delimiter //
 create procedure employees.stored_proc3(in empno int(11), in birthdate date, in firstname char(14), in lastname char(16), in gen enum('M', 'F'), in hiredate date)
 	begin 
 		insert into employees.employees (emp_no, birth_date, first_name, last_name, gender, hire_date) 
-        values (empno, birthdate, firstname, lastname, gen, hiredate);
+		values (empno, birthdate, firstname, lastname, gen, hiredate);
 		
 		select *
 		from employees.employees
@@ -154,19 +154,19 @@ create procedure employees.stored_proc4(in manager_no int(11))
 		select case when max(ms.salary) > max(emp_sal.salary) then 0
 						 else 1 end
 		into does_someone_make_more_than_then_manager
-        from employees.salaries as ms
+		from employees.salaries as ms
 		inner join employees.dept_manager as manager
 			on ms.emp_no = manager.emp_no
 		inner join employees.dept_emp as de
 			on manager.dept_no = de.dept_no
-            and manager.emp_no != de.emp_no
+			and manager.emp_no != de.emp_no
 		inner join employees.salaries as emp_sal
 			on emp_sal.emp_no = de.emp_no
 		where manager.emp_no = manager_no;
         
 		-- 	This if statement blocks determines if manager makes more than their employees 
 		--	or visa versa and conditional outputs to the screen based off that. 
-        if does_someone_make_more_than_then_manager = 1 then
+		if does_someone_make_more_than_then_manager = 1 then
 			select "Someone in a matter of fact make mores than the manager" as who_makes_more;
 		else
 			select "The manager makes more than every one else" as who_makes_more;
@@ -179,7 +179,7 @@ delimiter ;
 /*
 This stored procedure takes in number of terms that the series will have and then will create the series and will finally list it to the user.
 
-How to use: pass in a number that represents how many terms you want in the series. Keep in mind that the store procedure can only output up to 254 chars, 
+How to use: pass in a number that represents how many terms you want in the series. Keep in mind that the stored procedure can only output up to 254 chars, 
 so please use a reasonable number.
 
 For example, call the stored procedure as so:
@@ -192,14 +192,14 @@ create procedure employees.stored_proc5(in num int(11))
 		-- Declare variable needed by loop: first and second term of the sequence (0, 1), number that will hold the sum of the last two terms,
 		-- and a char variable to give a char representation of the series.
 		declare fib_sq char(254);
-        declare number1 int(11);
-        declare number2 int(11);
-        declare number3 int(11);
-        declare i int(11);
-        set i = 1;
+		declare number1 int(11);
+		declare number2 int(11);
+		declare number3 int(11);
+		declare i int(11);
+		set i = 1;
 		set number1 = 0;
-        set number2 = 1;
-        set fib_sq = '';
+		set number2 = 1;
+		set fib_sq = '';
         
 		-- Loop through until all elements are created
 		while i <= num do
@@ -209,9 +209,9 @@ create procedure employees.stored_proc5(in num int(11))
 				set fib_sq = concat(fib_sq, ', ', number1);
 			end if;
 			set number3 = number1 + number2;
-            set number1 = number2;
-            set number2 = number3;
-            set i = i + 1;
+			set number1 = number2;
+			set number2 = number3;
+			set i = i + 1;
 		end while;
 		
 		-- Show the series to the user
